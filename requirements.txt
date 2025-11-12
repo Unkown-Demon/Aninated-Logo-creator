@@ -1,0 +1,7 @@
+aiogram
+PyOpenGL
+moderngl
+Pillow
+imageio
+numpy
+requests

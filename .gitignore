@@ -1,0 +1,23 @@
+_pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+env/
+
+# IDE and editor folders
+.vscode/
+.idea/
+
+# Rendered output
+/assets/output/
+*.mp4
+*.gif
+
+# Session files
+*.session
+*.session-journal
+
+# Secrets and config files
+config.py
+.env
