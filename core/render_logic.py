@@ -2,7 +2,7 @@ import os
 import numpy as np
 from PIL import Image
 from core.renderer import OffscreenRenderer
-from core.models import MODELS, perspective, lookat, rotate, translate
+from core.models import MODELS, perspective, lookat, rotate, translate, scale
 from math import radians
 
 # Configuration for rendering
@@ -62,10 +62,14 @@ def render_animation(images_paths, shape_name, output_path):
             textures.extend(textures)
         textures = textures[:6]
     
-    # For other shapes, we'll just use the first texture for now
-    if shape_name != 'cube' and not textures:
-        # Fallback if no textures are loaded
-        textures.append(renderer.ctx.texture((1, 1), 4, bytes([255, 255, 255, 255]))) # White placeholder
+        # For other shapes, we'll just use the first texture for now
+        if shape_name != 'cube' and not textures:
+            # Fallback if no textures are loaded
+            textures.append(renderer.ctx.texture((1, 1), 4, bytes([255, 255, 255, 255]))) # White placeholder
+        
+        # Ensure there is at least one texture
+        if not textures:
+            textures.append(renderer.ctx.texture((1, 1), 4, bytes([255, 255, 255, 255]))) # White placeholder
         
     # 5. Render Loop
     frames = []

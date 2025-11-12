@@ -2,7 +2,7 @@ import moderngl
 import numpy as np
 from PIL import Image
 # Import matrix utilities from models.py
-from core.models import perspective, lookat
+from core.models import perspective
 
 class OffscreenRenderer:
     def __init__(self, width=512, height=512):
@@ -10,6 +10,7 @@ class OffscreenRenderer:
         self.height = height
         
         # Create a headless context
+        # Use a more robust way to create a headless context
         self.ctx = moderngl.create_context(standalone=True, require=330)
         
         # Create a framebuffer object (FBO) for off-screen rendering
@@ -55,7 +56,7 @@ class OffscreenRenderer:
             [
                 # in_position: 3 floats, offset 0
                 # in_texcoord: 2 floats, offset 3 * 4 bytes
-                (self.vbo, '3f 2f', 'in_position', 'in_texcoord')
+                (self.vbo, '3f 2f', 'in_position', 'in_texcoord') # 3 floats for position, 2 for texture coords
             ],
             index_buffer=self.ctx.buffer(indices.astype('i4').tobytes())
         )

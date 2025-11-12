@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import os
-import requests
+import aiohttp
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
@@ -38,12 +38,17 @@ async def download_image(file_id: str, destination_path: str):
     file = await bot.get_file(file_id)
     file_url = f"https://api.telegram.org/file/bot{BOT_TOKEN}/{file.file_path}"
     
-    response = requests.get(file_url)
-    if response.status_code == 200:
-        with open(destination_path, 'wb') as f:
-            f.write(response.content)
-        return True
-    return False
+    async with aiohttp.ClientSession() as session:
+        async with session.get(file_url) as response:
+            if response.status == 200:
+                with open(destination_path, 'wb') as f:
+                    while True:
+                        chunk = await response.content.read(1024)
+                        if not chunk:
+                            break
+                        f.write(chunk)
+                return True
+            return False
 
 # --- Handlers ---
 

@@ -23,10 +23,10 @@ def lookat(eye, center, up):
     u = np.cross(s, f)
     
     return np.array([
-        [s[0], u[0], -f[0], 0.0],
-        [s[1], u[1], -f[1], 0.0],
-        [s[2], u[2], -f[2], 0.0],
-        [-np.dot(s, eye), -np.dot(u, eye), np.dot(f, eye), 1.0]
+        [s[0], u[0], -f[0], -np.dot(s, eye)],
+        [s[1], u[1], -f[1], -np.dot(u, eye)],
+        [s[2], u[2], -f[2], np.dot(f, eye)],
+        [0.0, 0.0, 0.0, 1.0]
     ], dtype=np.float32)
 
 def translate(v):
@@ -125,25 +125,33 @@ def create_cylinder(sides=32, height=0.1, radius=1.0):
         
     # Indices for Top and Bottom faces
     for i in range(sides):
-        i1 = 2 + i * 4 # Top edge vertex index
-        i2 = 2 + (i + 1) % sides * 4 # Next Top edge vertex index
-        i3 = 3 + i * 4 # Bottom edge vertex index
-        i4 = 3 + (i + 1) % sides * 4 # Next Bottom edge vertex index
+        # The indices for the vertices are offset by 2 (for the center points)
+        # and then by 4 for each side segment (4 vertices per segment)
+        
+        # Indices for Top and Bottom faces
+        # Vertices for top/bottom face are at index 2 + i*4 and 3 + i*4
+        i_top_curr = 2 + i * 4
+        i_top_next = 2 + (i + 1) % sides * 4
+        i_bottom_curr = 3 + i * 4
+        i_bottom_next = 3 + (i + 1) % sides * 4
         
         # Top face (Triangle fan from center)
-        indices.extend([top_center_index, i1, i2])
+        indices.extend([top_center_index, i_top_curr, i_top_next])
         
-        # Bottom face (Triangle fan from center)
-        indices.extend([bottom_center_index, i4, i3])
+        # Bottom face (Triangle fan from center) - Winding order reversed for correct culling
+        indices.extend([bottom_center_index, i_bottom_next, i_bottom_curr])
         
         # Side faces (Two triangles per side)
-        i_side_top = 4 + i * 4
-        i_side_bottom = 5 + i * 4
-        i_next_side_top = 4 + (i + 1) % sides * 4
-        i_next_side_bottom = 5 + (i + 1) % sides * 4
+        # Vertices for side face are at index 4 + i*4 and 5 + i*4
+        i_side_top_curr = 4 + i * 4
+        i_side_bottom_curr = 5 + i * 4
+        i_side_top_next = 4 + (i + 1) % sides * 4
+        i_side_bottom_next = 5 + (i + 1) % sides * 4
         
-        indices.extend([i_side_top, i_side_bottom, i_next_side_top])
-        indices.extend([i_next_side_top, i_side_bottom, i_next_side_bottom])
+        # First triangle: Top-Current, Bottom-Current, Top-Next
+        indices.extend([i_side_top_curr, i_side_bottom_curr, i_side_top_next])
+        # Second triangle: Top-Next, Bottom-Current, Bottom-Next
+        indices.extend([i_side_top_next, i_side_bottom_curr, i_side_bottom_next])
         
     return np.array(vertices, dtype=np.float32), np.array(indices, dtype=np.uint32)
 
