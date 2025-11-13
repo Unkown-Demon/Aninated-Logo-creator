@@ -196,6 +196,9 @@ async def main() -> None:
     # Create output directory if it doesn't exist
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
+    # Delete webhook to ensure clean polling start
+    await bot.delete_webhook(drop_pending_updates=True)
+    
     # Start the bot
     await dp.start_polling(bot)
 
