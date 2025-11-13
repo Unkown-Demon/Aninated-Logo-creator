@@ -22,7 +22,7 @@ dp = Dispatcher()
 class LogoCreation(StatesGroup):
     waiting_for_images = State()
     waiting_for_shape = State()
-waiting_for_config = State()
+    waiting_for_config = State()
     
 # --- Utility Functions ---
 def get_shape_keyboard():
